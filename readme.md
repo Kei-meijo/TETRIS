@@ -3,6 +3,11 @@
 openCVを使用したテトリスです.
 操作入力にはゲームパッドを使用します.
 
+# Build
+Windows 10
+Visual Srudio 2019(v142)
+C++ 14
+
 # Features
 
 Hold・Nextなど基本的な機能あり
