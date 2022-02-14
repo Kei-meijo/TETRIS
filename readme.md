@@ -1,56 +1,61 @@
 # TETRIS
-openCV‚ğg—p‚µ‚½ƒeƒgƒŠƒX‚Å‚·.
-‘€ì“ü—Í‚É‚ÍƒQ[ƒ€ƒpƒbƒh‚ğg—p‚µ‚Ü‚·.
+
+openCVã‚’ä½¿ç”¨ã—ãŸãƒ†ãƒˆãƒªã‚¹ã§ã™.
+æ“ä½œå…¥åŠ›ã«ã¯ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ã‚’ä½¿ç”¨ã—ã¾ã™.
 
 # Features
-HoldENext‚È‚ÇŠî–{“I‚È‹@”\‚ ‚è
-T-spinETetris”»’è‚ ‚è
-‹Z‚âÁ‚µ‚½ƒ‰ƒCƒ“”‚É‚æ‚éƒXƒRƒAŒvZ‚ ‚è
-İ’èƒtƒ@ƒCƒ‹‚É‚æ‚è, ©—R‚ÉƒXƒRƒA•ÏX‚âƒŒƒxƒ‹’Ç‰Á‰Â”\
-ƒQ[ƒ€ƒpƒbƒhÚ‘±ó‹µ‚É‚æ‚Á‚Äƒ}ƒ‹ƒ`ƒvƒŒƒC‰Â”\
 
-ã‹L‚·‚×‚Ä‚»‚ë‚Á‚Ä‚¢‚È‚¢‚Æ“®ì‚µ‚Ü‚¹‚ñ‚Ì‚Å‚²’ˆÓ‚­‚¾‚³‚¢.
+Holdãƒ»Nextãªã©åŸºæœ¬çš„ãªæ©Ÿèƒ½ã‚ã‚Š
+T-spinãƒ»Tetrisåˆ¤å®šã‚ã‚Š
+æŠ€ã‚„æ¶ˆã—ãŸãƒ©ã‚¤ãƒ³æ•°ã«ã‚ˆã‚‹ã‚¹ã‚³ã‚¢è¨ˆç®—ã‚ã‚Š
+è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã«ã‚ˆã‚Š, è‡ªç”±ã«ã‚¹ã‚³ã‚¢å¤‰æ›´ã‚„ãƒ¬ãƒ™ãƒ«è¿½åŠ å¯èƒ½
+ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ¥ç¶šçŠ¶æ³ã«ã‚ˆã£ã¦ãƒãƒ«ãƒãƒ—ãƒ¬ã‚¤å¯èƒ½
+
+ä¸Šè¨˜ã™ã¹ã¦ãã‚ã£ã¦ã„ãªã„ã¨å‹•ä½œã—ã¾ã›ã‚“ã®ã§ã”æ³¨æ„ãã ã•ã„.
 
 # Requirement
  
 * openCV 4.0 (https://github.com/opencv/opencv)
 * nlohmann/json (https://github.com/nlohmann/json)
 
-#Note
-g—p‚·‚é‰æ‘œ‚Í“ü‚Á‚Ä‚¨‚è‚Ü‚¹‚ñ‚Ì‚Å, imageƒtƒHƒ‹ƒ_“à‚É“ü‚ê‚Ä‚­‚¾‚³‚¢.
+# Note
 
-‰æ‘œ‚ÌÚ×
+ä½¿ç”¨ã™ã‚‹ç”»åƒã¯å…¥ã£ã¦ãŠã‚Šã¾ã›ã‚“ã®ã§, imageãƒ•ã‚©ãƒ«ãƒ€å†…ã«å…¥ã‚Œã¦ãã ã•ã„.
+
+ç”»åƒã®è©³ç´°
+
 256x256px
-u0.pngv`u8.pngv
-‚»‚ê‚¼‚ê
-*0.png : ”wŒi (•)
-*1.png : I-ƒeƒgƒŠƒ~ƒm (…F)
-*2.png : O-ƒeƒgƒŠƒ~ƒm (‰©F)
-*3.png : S-ƒeƒgƒŠƒ~ƒm (—ÎF)
-*4.png : Z-ƒeƒgƒŠƒ~ƒm (ÔF)
-*5.png : J-ƒeƒgƒŠƒ~ƒm (ÂF)
-*6.png : L-ƒeƒgƒŠƒ~ƒm (ƒIƒŒƒ“ƒWF)
-*7.png : T-ƒeƒgƒŠƒ~ƒm (‡F)
-*8.png : ‚¨‚¶‚á‚ÜƒuƒƒbƒN (ŠDF)
+ã€Œ0.pngã€ï½ã€Œ8.pngã€
+ãã‚Œãã‚Œ
+*0.png : èƒŒæ™¯ (é»’)
+*1.png : I-ãƒ†ãƒˆãƒªãƒŸãƒ (æ°´è‰²)
+*2.png : O-ãƒ†ãƒˆãƒªãƒŸãƒ (é»„è‰²)
+*3.png : S-ãƒ†ãƒˆãƒªãƒŸãƒ (ç·‘è‰²)
+*4.png : Z-ãƒ†ãƒˆãƒªãƒŸãƒ (èµ¤è‰²)
+*5.png : J-ãƒ†ãƒˆãƒªãƒŸãƒ (é’è‰²)
+*6.png : L-ãƒ†ãƒˆãƒªãƒŸãƒ (ã‚ªãƒ¬ãƒ³ã‚¸è‰²)
+*7.png : T-ãƒ†ãƒˆãƒªãƒŸãƒ (ç´«è‰²)
+*8.png : ãŠã˜ã‚ƒã¾ãƒ–ãƒ­ãƒƒã‚¯ (ç°è‰²)
 
 # License
  
 TETRIS is under [MIT license](https://en.wikipedia.org/wiki/MIT_License).
 
 # References
-ƒeƒgƒŠƒX 
-ƒXƒRƒAŒvZ http://www.terasol.co.jp/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/6841
-‰Î—ÍŒvZ1 https://ch-random.net/post/96/
-‰Î—ÍŒvZ2 https://w.atwiki.jp/puyopuyo_tetris/pages/98.html
-‚¨‚¶‚á‚ÜƒuƒƒbƒN‚Ìd—l https://tetris-matome.com/garbage/
-T-spin”»’è https://tetris-matome.com/judgment/
-SRS https://tetrisch.github.io/main/srs.html
 
-openCV 
-‰æ‘œ“\‚è•t‚¯ https://kougaku-navi.hatenablog.com/entry/20160108/p1
-ƒEƒBƒ“ƒhƒEˆÊ’u•ÏX https://qiita.com/Kazuhito/items/b2ebd9f9010f1ffcac5b
+ãƒ†ãƒˆãƒªã‚¹ 
+ã‚¹ã‚³ã‚¢è¨ˆç®— http://www.terasol.co.jp/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/6841  
+ç«åŠ›è¨ˆç®—1 https://ch-random.net/post/96/  
+ç«åŠ›è¨ˆç®—2 https://w.atwiki.jp/puyopuyo_tetris/pages/98.html  
+ãŠã˜ã‚ƒã¾ãƒ–ãƒ­ãƒƒã‚¯ã®ä»•æ§˜ https://tetris-matome.com/garbage/  
+T-spinåˆ¤å®š https://tetris-matome.com/judgment/  
+SRS https://tetrisch.github.io/main/srs.html  
 
-ƒQ[ƒ€ƒpƒbƒh“ü—Í
-XInput1 http://gameprogrammingunit.web.fc2.com/xinput/index.html
-XInput2 http://pc98.skr.jp/post/2019/0819/
+openCV   
+ç”»åƒè²¼ã‚Šä»˜ã‘ https://kougaku-navi.hatenablog.com/entry/20160108/p1  
+ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®å¤‰æ›´ https://qiita.com/Kazuhito/items/b2ebd9f9010f1ffcac5b  
+
+ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰å…¥åŠ›
+XInput1 http://gameprogrammingunit.web.fc2.com/xinput/index.html  
+XInput2 http://pc98.skr.jp/post/2019/0819/  
 
