@@ -1,0 +1,10 @@
+image .png only
+0.png : empty block (black)
+1.png : I-mino (light blue)
+2.png : O-mino (yellow)
+3.png : S-mino (green)
+4.png : Z-mino (red)
+5.png : J-mino (blue)
+6.png : L-mino (orange)
+7.png : T-mino (purple)
+8.png : attack block (gray)

@@ -1,0 +1,119 @@
+{
+  "config name": "game pad",
+  "long press judgment": 30,
+  "key": [
+    {
+      "type": "button",
+      "key name": "POV LEFT",
+      "action name": "LEFT"
+    },
+    {
+      "type": "button",
+      "key name": "POV RIGHT",
+      "action name": "RIGHT"
+    },
+    {
+      "type": "button",
+      "key name": "POV DOWN",
+      "action name": "DOWN"
+    },
+    {
+      "type": "button",
+      "key name": "POV UP",
+      "action name": ""
+    },
+    {
+      "type": "button",
+      "key name": "BUTTON A",
+      "action name": "HARD DROP"
+    },
+    {
+      "type": "button",
+      "key name": "BUTTON B",
+      "action name": ""
+    },
+    {
+      "type": "button",
+      "key name": "BUTTON X",
+      "action name": "HOLD"
+    },
+    {
+      "type": "button",
+      "key name": "BUTTON LB",
+      "action name": "ROTATION CCW"
+    },
+    {
+      "type": "button",
+      "key name": "BUTTON RB",
+      "action name": "ROTATION CW"
+    },
+    {
+      "type": "button",
+      "key name": "BUTTON LT",
+      "action name": ""
+    },
+    {
+      "type": "button",
+      "key name": "BUTTON RT",
+      "action name": ""
+    },
+    {
+      "type": "stick",
+      "key name": "JOY STICK 1",
+      "sensitivity": 0.5,
+      "action": [
+        {
+          "direction": "LEFT",
+          "action name": "LEFT"
+        },
+        {
+          "direction": "RIGHT",
+          "action name": "RIGHT"
+        },
+        {
+          "direction": "UP",
+          "action name": ""
+        },
+        {
+          "direction": "DOWN",
+          "action name": "DOWN"
+        }
+      ]
+    },
+    {
+      "type": "stick",
+      "key name": "JOY STICK 2",
+      "sensitivity": 0.5,
+      "action": [
+        {
+          "direction": "LEFT",
+          "action name": ""
+        },
+        {
+          "direction": "RIGHT",
+          "action name": ""
+        },
+        {
+          "direction": "UP",
+          "action name": ""
+        },
+        {
+          "direction": "DOWN",
+          "action name": ""
+        }
+      ]
+    },
+    {
+      "type": "trigger",
+      "key name": "LT",
+      "sensitivity": 0.5,
+      "action name": "ROTATION CCW"
+    },
+    {
+      "type": "trigger",
+      "key name": "RT",
+      "sensitivity": 0.5,
+      "action name": "ROTATION CW"
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "project name": "openCV tetris",
+  "fps": 30,
+  "width": 10,
+  "height": 20,
+  "levels": [
+    {
+      "level": 1,
+      "bonus": 1.0,
+      "level up score": 0,
+      "speed": {
+        "last action count": 2,
+        "set count": 15,
+        "delete line wait": 5,
+        "down speed": 40,
+        "attack count yellow": 150,
+        "attack count red": 210
+      },
+      "score": {
+        "line": 100,
+        "line2": 300,
+        "line3": 500,
+        "tetris": 800,
+        "perfect line": 800,
+        "perfect line2": 1000,
+        "perfect line3": 1800,
+        "perfect tetris": 2000,
+        "t-spin single": 800,
+        "t-spin double": 1200,
+        "t-spin triple": 1600,
+        "REN": 50,
+        "REN MAX": 1000,
+        "back to back": 1.5
+      },
+      "attack": {
+        "line": 0,
+        "line2": 1,
+        "line3": 2,
+        "tetris": 4,
+        "perfect line": 10,
+        "perfect line2": 10,
+        "perfect line3": 10,
+        "perfect tetris": 10,
+        "t-spin single": 2,
+        "t-spin double": 4,
+        "t-spin triple": 6,
+        "REN": [1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5],
+        "back to back": 1
+      }
+    },
+    {
+      "level": 2,
+      "bonus": 2,
+      "level up score": 1500,
+      "speed": {
+        "last action count": 2,
+        "set count": 15,
+        "delete line wait": 5,
+        "down speed": 30,
+        "attack count yellow": 150,
+        "attack count red": 210
+      },
+      "score": {
+        "line": 100,
+        "line2": 300,
+        "line3": 500,
+        "tetris": 800,
+        "perfect line": 800,
+        "perfect line2": 1000,
+        "perfect line3": 1800,
+        "perfect tetris": 2000,
+        "t-spin single": 800,
+        "t-spin double": 1200,
+        "t-spin triple": 1600,
+        "REN": 50,
+        "REN MAX": 1000,
+        "back to back": 1.5
+      },
+      "attack": {
+        "line": 0,
+        "line2": 1,
+        "line3": 2,
+        "tetris": 4,
+        "perfect line": 10,
+        "perfect line2": 10,
+        "perfect line3": 10,
+        "perfect tetris": 10,
+        "t-spin single": 2,
+        "t-spin double": 4,
+        "t-spin triple": 6,
+        "REN": [ 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5 ],
+        "back to back": 1
+      }
+    },
+    {
+      "level": 3,
+      "bonus": 3,
+      "level up score": 4000,
+      "speed": {
+        "last action count": 2,
+        "set count": 13,
+        "delete line wait": 5,
+        "down speed": 25,
+        "attack count yellow": 150,
+        "attack count red": 210
+      },
+      "score": {
+        "line": 100,
+        "line2": 300,
+        "line3": 500,
+        "tetris": 800,
+        "perfect line": 800,
+        "perfect line2": 1000,
+        "perfect line3": 1800,
+        "perfect tetris": 2000,
+        "t-spin single": 800,
+        "t-spin double": 1200,
+        "t-spin triple": 1600,
+        "REN": 50,
+        "REN MAX": 1000,
+        "back to back": 1.5
+      },
+      "attack": {
+        "line": 0,
+        "line2": 1,
+        "line3": 2,
+        "tetris": 4,
+        "perfect line": 10,
+        "perfect line2": 10,
+        "perfect line3": 10,
+        "perfect tetris": 10,
+        "t-spin single": 2,
+        "t-spin double": 4,
+        "t-spin triple": 6,
+        "REN": [ 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5 ],
+        "back to back": 1
+      }
+    },
+    {
+      "level": 4,
+      "bonus": 4.0,
+      "level up score": 10000,
+      "speed": {
+        "last action count": 2,
+        "set count": 13,
+        "delete line wait": 5,
+        "down speed": 20,
+        "attack count yellow": 150,
+        "attack count red": 210
+      },
+      "score": {
+        "line": 100,
+        "line2": 300,
+        "line3": 500,
+        "tetris": 800,
+        "perfect line": 800,
+        "perfect line2": 1000,
+        "perfect line3": 1800,
+        "perfect tetris": 2000,
+        "t-spin single": 800,
+        "t-spin double": 1200,
+        "t-spin triple": 1600,
+        "REN": 50,
+        "REN MAX": 1000,
+        "back to back": 1.5
+      },
+      "attack": {
+        "line": 0,
+        "line2": 1,
+        "line3": 2,
+        "tetris": 4,
+        "perfect line": 10,
+        "perfect line2": 10,
+        "perfect line3": 10,
+        "perfect tetris": 10,
+        "t-spin single": 2,
+        "t-spin double": 4,
+        "t-spin triple": 6,
+        "REN": [ 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5 ],
+        "back to back": 1
+      }
+    }
+  ]
+}

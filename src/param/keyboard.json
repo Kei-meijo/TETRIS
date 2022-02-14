@@ -1,0 +1,33 @@
+{
+  "config name": "key board",
+  "key": [
+    {
+      "key name": "LEFT",
+      "key code": [ 65, 97 ]
+    },
+    {
+      "key name": "RIGHT",
+      "key code": [ 68, 100 ]
+    },
+    {
+      "key name": "DOWN",
+      "key code": [ 83, 115 ]
+    },
+    {
+      "key name": "ROTATION CW",
+      "key code": [ 87, 119 ]
+    },
+    {
+      "key name": "ROTATION CCW",
+      "key code": [ 69, 101 ]
+    },
+    {
+      "key name": "HOLD",
+      "key code": [ 81, 113 ]
+    },
+    {
+      "key name": "HARD DROP",
+      "key code": [ 90, 122 ]
+    }
+  ]
+}
