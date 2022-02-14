@@ -1,6 +1,6 @@
 {
   "config name": "game pad",
-  "long press judgment": 30,
+  "long press judgment": 20,
   "key": [
     {
       "type": "button",

@@ -15,6 +15,7 @@ public:
 	static const int HARD_DROP = 64;
 	static const int START = 128;
 	static const int BACK = 256;
+	static const int LONG_PRESS = 512;
 
 	//コンストラクタ
 	Config() : fps(0), height(0), width(0) {}

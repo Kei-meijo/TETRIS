@@ -118,7 +118,7 @@ GamePad::GamePad(const char* file_name, KeyBoard& keyboard) : is_open(false), pu
 				//Ý’è‚ð•Û‘¶
 				config.config = trigger;
 			}
-
+			 
 			//Ý’è‚ð’Ç‰Á
 			this->pad_keys.push_back(config);
 		}
@@ -223,10 +223,10 @@ int GamePad::getAction(int id) {
 								//’·ŽžŠÔ‰Ÿ‚µ‚Ä‚¢‚½‚ç
 								if (*push_count >= push_max) {
 									//‘€ì‚ð“`’B
-									return btn->action;
+									return btn->action | Config::LONG_PRESS;
 								} else {
 									//’ZŽžŠÔ’·‰Ÿ‚µ‚Í, ‘€ì‚ð‹ó‚É
-									return Config::NONE;
+									return Config::LONG_PRESS;
 								}
 							} else {
 								//’P‰Ÿ‚µ
@@ -297,9 +297,11 @@ int GamePad::getAction(int id) {
 							(*push_count)++;
 
 							if (*push_count >= push_max) {
-								return action;
+								//‘€ì‚ð“`’B
+								return action | Config::LONG_PRESS;
 							} else {
-								return Config::NONE;
+								//’ZŽžŠÔ’·‰Ÿ‚µ‚Í, ‘€ì‚ð‹ó‚É
+								return Config::LONG_PRESS;
 							}
 						} else {
 							*last_action = action;
@@ -327,9 +329,11 @@ int GamePad::getAction(int id) {
 						(*push_count)++;
 
 						if (*push_count >= push_max) {
-							return trg->action;
+							//‘€ì‚ð“`’B
+							return trg->action | Config::LONG_PRESS;
 						} else {
-							return Config::NONE;
+							//’ZŽžŠÔ’·‰Ÿ‚µ‚Í, ‘€ì‚ð‹ó‚É
+							return Config::LONG_PRESS;
 						}
 					} else {
 						*last_action = trg->action;

@@ -1130,44 +1130,37 @@ bool  Board::loop(int action) {
 		//((action & LEFT) != 0) は指定のアクションかの確認(左の場合はLEFT=左移動)
 		//last_action_key != LEFT はキーを押し続けて連続移動しないようにするもの
 		//1回しか押してないのに2回反応するものも防げる
-		if (action != Config::NONE && ((action & Config::LEFT) != 0) && last_action_key != Config::LEFT) {
-			move(-1, 0, 0);					//左移動
-			this->set_count = 0;			//キー入力を行ってからの時間計測よう
-			this->last_action_key = Config::LEFT;	//最後に入力したキーを保存
-			last_action_count = 0;			//最後に実際に動かした時からの時間計測
-		} else if (action != Config::NONE && ((action & Config::RIGHT) != 0) && last_action_key != Config::RIGHT) {
-			move(1, 0, 0);					//右移動
-			this->set_count = 0;
-			this->last_action_key = Config::RIGHT;
-			last_action_count = 0;
-		} else if (action != Config::NONE && ((action & Config::ROTATION_CW) != 0) && last_action_key != Config::ROTATION_CW) {
-			move(0, 0, 1);					//時計周りに回転
-			this->set_count = 0;
-			this->last_action_key = Config::ROTATION_CW;
-			last_action_count = 0;
-		} else if (action != Config::NONE && ((action & Config::ROTATION_CCW) != 0) && last_action_key != Config::ROTATION_CCW) {
-			move(0, 0, -1);					//反時計周りに回転
-			this->set_count = 0;
-			this->last_action_key = Config::ROTATION_CCW;
-			last_action_count = 0;
-		} else if (action != Config::NONE && ((action & Config::HOLD) != 0)) {
+		if (action & ~Config::LONG_PRESS && action & Config::LEFT && last_action_key != Config::LEFT) {
+			if (move(-1, 0, 0)) {
+				//左移動
+				this->set_count = 0;			//キー入力を行ってからの時間計測よう
+				this->last_action_key = Config::LEFT;	//最後に入力したキーを保存
+				last_action_count = 0;			//最後に実際に動かした時からの時間計測
+			}
+		} else if (action & ~Config::LONG_PRESS && action & Config::RIGHT && last_action_key != Config::RIGHT) {
+			if (move(1, 0, 0)) {				//右移動
+				this->set_count = 0;
+				this->last_action_key = Config::RIGHT;
+				last_action_count = 0;
+			}
+		} else if (action & ~Config::LONG_PRESS && action & Config::ROTATION_CW && last_action_key != Config::ROTATION_CW) {
+			if (move(0, 0, 1)) {					//時計周りに回転
+				this->set_count = 0;
+				this->last_action_key = Config::ROTATION_CW;
+				last_action_count = 0;
+			}
+		} else if (action & ~Config::LONG_PRESS && action & Config::ROTATION_CCW && last_action_key != Config::ROTATION_CCW) {
+			if (move(0, 0, -1)) {					//反時計周りに回転
+				this->set_count = 0;
+				this->last_action_key = Config::ROTATION_CCW;
+				last_action_count = 0;
+			}
+		} else if (action & ~Config::LONG_PRESS && action & Config::HOLD) {
 			hold();							//ホールド
 			this->down_count = 0;
 			this->set_count = 0;
 			last_action_count = 0;
-		} else if (this->down_count > this->now_level.down_speed || (action != Config::NONE && ((action & Config::DOWN) != 0)) && last_action_key != Config::DOWN) {
-			//重力もしくは下移動入力の受け付け
-			//上記条件に加えて重力での判定も加えている
-			this->down_count = 0;
-			this->set_count = 0;
-			this->last_action_key = Config::DOWN;
-			last_action_count = 0;
-
-			this->score++;
-
-			//下へ移動
-			candown = move(0, -1, 0);
-		} else if (action != Config::NONE && ((action & Config::HARD_DROP) != 0) && last_action_key != Config::HARD_DROP) {
+		} else if (action & ~Config::LONG_PRESS && action & Config::HARD_DROP && last_action_key != Config::HARD_DROP) {
 			//ハードドロップ
 			this->last_action_key = Config::HARD_DROP;
 			this->score += 2 * (this->now_block.y - this->ghost.y);
@@ -1177,6 +1170,21 @@ bool  Board::loop(int action) {
 			last_action_count = 0;
 			now_block = ghost;//操作ブロックをゴーストに書き換えてsetする
 			force_set = true;//強制的にset
+		}
+
+		if ((this->down_count > this->now_level.down_speed && last_action_key == Config::NONE) || action & ~Config::LONG_PRESS && action & Config::DOWN && last_action_key != Config::DOWN) {
+			//重力もしくは下移動入力の受け付け
+			//上記条件に加えて重力での判定も加えている
+			//下へ移動
+			candown = move(0, -1, 0);
+			if (candown) {
+				this->down_count = 0;
+				this->set_count = 0;
+				this->last_action_key = Config::DOWN;
+				last_action_count = 0;
+
+				this->score++;
+			}
 		}
 
 		this->down_count++;
@@ -1217,10 +1225,12 @@ bool  Board::loop(int action) {
 		last_action_count = 0;
 	}
 
-	//無操作が一定時間続くか, HARDDROPしたとき
-	if (this->set_count == this->now_level.set_count_max || force_set || !candown) {
-		if (candown)candown = move(0, -1, 0, false);//した移動できるか確認(実際に動かさない)
+	printf("last action =  %d\n", this->set_count);
 
+	//無操作が一定時間続くか, HARDDROPしたとき
+	if (this->set_count == this->now_level.set_count_max && !(action & Config::LONG_PRESS) || force_set || !candown) {
+		if (candown)candown = move(0, -1, 0, false);//した移動できるか確認(実際に動かさない)
+		if (!candown)printf("down %d\n", this->set_count);
 		if (!candown) {
 			//下移動不可
 			this->set_count = 0;
