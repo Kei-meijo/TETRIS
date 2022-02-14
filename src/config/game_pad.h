@@ -37,6 +37,8 @@ public:
 private:
 	struct PadInfo {
 
+		PadInfo() : type(Pad_Input_Type::NONE) {}
+
 		//ボタンタイプ
 		enum Pad_Input_Type {
 			Button,

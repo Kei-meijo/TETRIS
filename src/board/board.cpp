@@ -8,7 +8,7 @@ Board::Board() : img_size(40), already_hold(false), hold_block(0), next_size_max
 	score(0), down_count(0), set_count(0), delete_line_wait(false), delete_line_wait_count(0),
 	last_action(Config::NONE), last_action_key(Config::NONE), last_action_count(0), ren(0), back_to_back(0),
 	go_dir(0), go_x(1), go_y(0), go_c(0), need_calc_score(false), is_started(false), attack(0),
-	attack_yellow_type(2), attack_red_type(4), can_put_block(true), put_block_state(false), fps(30) {
+	attack_yellow_type(2), attack_red_type(4), can_put_block(true), put_block_state(false), fps(30), x(10), y(20) {
 
 	this->x = 10;
 	this->y = 20;
@@ -17,7 +17,7 @@ Board::Board() : img_size(40), already_hold(false), hold_block(0), next_size_max
 
 	this->images = nullptr;
 	this->mino_counts = nullptr;
-	this->mino_counts = 0;
+	this->mino_number = 0;
 	this->minos = nullptr;
 	this->rawboard = nullptr;
 	this->srs_type = 0;
@@ -30,7 +30,8 @@ Board::Board(int x, int y, Config& lvl) :
 	score(0), down_count(0), set_count(0), delete_line_wait(false), delete_line_wait_count(0),
 	last_action(Config::NONE), last_action_key(Config::NONE), last_action_count(0), ren(0), back_to_back(0),
 	go_dir(0), go_x(1), go_y(0), go_c(0), levels(lvl), need_calc_score(false), is_started(false), attack(0),
-	attack_yellow_type(2), attack_red_type(4), can_put_block(true), put_block_state(false) {
+	attack_yellow_type(2), attack_red_type(4), can_put_block(true), put_block_state(false), x(x), y(y), 
+	highest_line(0) {
 
 	//ボードサイズ初期化
 	this->x = x;

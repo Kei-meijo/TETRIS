@@ -1,3 +1,4 @@
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Kei-meijo/TETRIS/blob/master/LICENSE.MIT)
 # TETRIS
 
 openCVを使用したテトリスです.
