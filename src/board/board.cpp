@@ -8,7 +8,20 @@ Board::Board() : img_size(40), already_hold(false), hold_block(0), next_size_max
 	score(0), down_count(0), set_count(0), delete_line_wait(false), delete_line_wait_count(0),
 	last_action(Config::NONE), last_action_key(Config::NONE), last_action_count(0), ren(0), back_to_back(0),
 	go_dir(0), go_x(1), go_y(0), go_c(0), need_calc_score(false), is_started(false), attack(0),
-	attack_yellow_type(2), attack_red_type(4), can_put_block(true), put_block_state(false) {
+	attack_yellow_type(2), attack_red_type(4), can_put_block(true), put_block_state(false), fps(30) {
+
+	this->x = 10;
+	this->y = 20;
+	this->highest_line = 0;
+	this->attack_max = 14;
+
+	this->images = nullptr;
+	this->mino_counts = nullptr;
+	this->mino_counts = 0;
+	this->minos = nullptr;
+	this->rawboard = nullptr;
+	this->srs_type = 0;
+	this->tspin_status = T_SPIN_NONE;
 }
 
 //コンストラクタ
@@ -22,6 +35,7 @@ Board::Board(int x, int y, Config& lvl) :
 	//ボードサイズ初期化
 	this->x = x;
 	this->y = y;
+	this->highest_line = 0;
 	this->attack_max = y - 6;
 	if (attack_max < 1) attack_max = 1;
 
@@ -77,13 +91,9 @@ Board::Board(int x, int y, Config& lvl) :
 	randomEngine = std::mt19937(randomSeed);
 	randomBlockDistribution = std::uniform_int_distribution<int>(1, this->mino_number - 1);
 	randomlineDistribution = std::uniform_int_distribution<int>(1, this->x);
-
-#ifdef _DEBUG
-
-	Debug(1);
-
-#endif // _DEBUG
 }
+
+
 
 //メモリ開放
 Board::~Board() {
@@ -131,6 +141,20 @@ void Board::start() {
 	}
 }
 
+//ブロックが干渉しているか?
+bool Board::isInterfere(Blocks& blocks) {
+	//ミノの座標取得
+	auto points = blocks.getPoints();
+	for (auto& p : points) {
+		//ミノの位置にブロックが被っていないか確認
+		if (this->rawboard[p.y][p.x] != 0) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 //ミノを動かす
 bool Board::move(int x, int y, int rot, bool action) {
 
@@ -144,18 +168,8 @@ bool Board::move(int x, int y, int rot, bool action) {
 		//左右方向
 		tmp.x += x;
 
-		//ミノの座標取得
-		auto points = tmp.getPoints();
-		bool has_block = false;
-		for (auto& p : points) {
-			//ミノの位置にブロックが被っていないか確認
-			if (this->rawboard[p.y][p.x] != 0) {
-				has_block = true;
-				break;
-			}
-		}
-
-		if (has_block) {
+		//ブロックが干渉しているか
+		if (isInterfere(tmp)) {
 			//移動不可
 			//特に何もせず終了
 			return false;
@@ -274,18 +288,8 @@ bool Board::move(int x, int y, int rot, bool action) {
 		//下方向
 		tmp.y += y;
 
-		//ミノの座標取得
-		auto points = tmp.getPoints();
-		bool has_block = false;
-		for (auto& p : points) {
-			//ミノの位置にブロックが被っていないか確認
-			if (this->rawboard[p.y][p.x] != 0) {
-				has_block = true;
-				break;
-			}
-		}
-
-		if (has_block) {
+		//ブロックが干渉しているか
+		if (isInterfere(tmp)) {
 			//移動不可
 			//特に何もせず終了
 			return false;
@@ -468,8 +472,9 @@ bool Board::setNewBlock() {
 			//後何回出せるか	1　1　0　2　0　1　1
 			//上の時, タイプは4
 			//(1番目は1, 2番目は2, 3番目は4, 4番目は6, 5番目は7)
-			int tmp = dist(randomEngine) - 1;
+			int tmp = dist(randomEngine);
 			int now_count_ = 0;//探索中に今何番目か記録しておく
+
 			//上で決めたtmp番目を探す
 			for (int i = 1; i < this->mino_number; i++) {
 				if (this->mino_counts[i] > 0) {//当たり前だけど, 使えないやつはカウントしないようにする
@@ -500,15 +505,7 @@ bool Board::setNewBlock() {
 
 	//新規ブロックのミノの座標取得
 	//Game Over判定のたの, 新規ブロックが置ける判定に使用
-	auto points = now_block.getPoints();
-	bool has_block = false;
-	for (auto& p : points) {
-		//ミノの位置にブロックが被っていないか確認
-		if (this->rawboard[p.y][p.x] != 0) {
-			has_block = true;
-			break;
-		}
-	}
+	bool has_block = isInterfere(now_block);
 
 	//最後に操作した行動のリセット
 	last_action = Config::NONE;
@@ -649,8 +646,6 @@ cv::Mat Board::showAttackMino(int margin) {
 
 //操作中ミノを固定させる
 bool  Board::set() {
-
-	bool flag = true;
 	//ホールドできるようにする
 	this->already_hold = false;
 	//ミノを動かせないようにする
@@ -662,11 +657,7 @@ bool  Board::set() {
 
 	//そもそも設置できるか確認
 	//ブロックが重なっていないか
-	for (auto& p : points) {
-		if (this->rawboard[p.y][p.x] != 0) {
-			return false;
-		}
-	}
+	if (isInterfere(now_block))return false;
 
 	//Tスピン判定
 	this->tspin_status = T_SPIN_NONE;
@@ -1399,129 +1390,3 @@ cv::Mat Board::getMinoImage(int type, int type_c) {
 	}
 	return display_mino;
 }
-
-
-
-#ifdef _Debug
-//Debug用
-void Board::Debug(int pattern) {
-	switch (pattern) {
-	case 0: {
-		int i = 1, j = 1;
-		this->rawboard[i][j++] = 7;
-		this->rawboard[i][j++] = 7;
-		this->rawboard[i][j++] = 7;
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 3;
-		this->rawboard[i][j++] = 3;
-		this->rawboard[i][j++] = 5;
-		this->rawboard[i][j++] = 5;
-		this->rawboard[i][j++] = 2;
-		this->rawboard[i][j++] = 2;
-		i++; j = 1;
-
-		this->rawboard[i][j++] = 6;
-		this->rawboard[i][j++] = 7;
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 6;
-		this->rawboard[i][j++] = 3;
-		this->rawboard[i][j++] = 3;
-		this->rawboard[i][j++] = 5;
-		this->rawboard[i][j++] = 2;
-		this->rawboard[i][j++] = 2;
-		i++; j = 1;
-
-		this->rawboard[i][j++] = 6;
-		this->rawboard[i][j++] = 6;
-		this->rawboard[i][j++] = 6;
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 6;
-		this->rawboard[i][j++] = 6;
-		this->rawboard[i][j++] = 6;
-		this->rawboard[i][j++] = 5;
-		this->rawboard[i][j++] = 4;
-		this->rawboard[i][j++] = 4;
-		i++; j = 1;
-
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 4;
-		this->rawboard[i][j++] = 4;
-		this->rawboard[i][j++] = 7;
-		this->rawboard[i][j++] = 4;
-		this->rawboard[i][j++] = 4;
-		this->rawboard[i][j++] = 8;
-		i++; j = 1;
-
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 0;
-		this->rawboard[i][j++] = 4;
-		this->rawboard[i][j++] = 4;
-		this->rawboard[i][j++] = 7;
-		this->rawboard[i][j++] = 7;
-		this->rawboard[i][j++] = 7;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		i++; j = 1;
-	}
-	case 1: {
-		this->nexts.push_back(1);
-
-		int i = 1, j = 1;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 0;
-		i++; j = 1;
-
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 0;
-		i++; j = 1;
-
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 0;
-		i++; j = 1;
-
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 8;
-		this->rawboard[i][j++] = 0;
-		i++; j = 1;
-	}
-	default:
-		break;
-	}
-}
-#endif

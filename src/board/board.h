@@ -22,6 +22,7 @@ public:
 	//コンストラクタ
 	Board();
 	Board(int x, int y, Config& lvl) ;
+	Board(const Board&) = delete;
 
 	//メモリ開放
 	~Board();
@@ -36,6 +37,8 @@ public:
 	inline void end() {
 		is_started = false;
 	}
+
+	bool isInterfere(Blocks& blocks);
 
 	//ミノを動かす
 	bool move(int x, int y, int rot, bool action = true);

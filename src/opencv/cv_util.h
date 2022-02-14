@@ -9,7 +9,7 @@ void paste(cv::Mat& dst, cv::Mat src, int x, int y, int width, int height);
 void paste(cv::Mat& dst, cv::Mat src, int x, int y);
 
 // ‰æ‘œ‚ğ‰æ‘œ‚É“\‚è•t‚¯‚éŠÖ”(ƒuƒŒƒ“ƒh)
-void blend_paste(cv::Mat& dst, cv::Mat src, int x, int y, int width, int height);
+void blend_paste(cv::Mat& dst, cv::Mat src, int x, int y, int width, int height, bool blend = true);
 
 //‰æ‘œ‚ğŒ‹‡‚·‚éŠÖ”
 void concat(cv::Mat& dst, cv::Mat left, cv::Mat right, int margin);
