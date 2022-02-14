@@ -67,4 +67,7 @@ openCV
 
 ゲームパッド入力
 XInput1 http://gameprogrammingunit.web.fc2.com/xinput/index.html  
-XInput2 http://pc98.skr.jp/post/2019/0819/
+XInput2 http://pc98.skr.jp/post/2019/0819/  
+
+FPS制御
+fps https://hakase0274.hatenablog.com/entry/2019/10/06/234413
