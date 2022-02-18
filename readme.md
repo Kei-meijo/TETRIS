@@ -48,7 +48,6 @@ T-spin・Tetris判定あり
 | T-テトリミノ (紫色)   | 7.png  |
 | おじゃまブロック (灰色)  | 8.png  |
 
-
 ## License
  
 TETRIS is under [MIT license](https://en.wikipedia.org/wiki/MIT_License).
