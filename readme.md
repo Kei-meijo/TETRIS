@@ -26,7 +26,7 @@ T-spinÅETetrisîªíËÇ†ÇË
 
 ## Requirement
  
-[openCV 4.x](https://github.com/opencv/opencv)
+[openCV 4.x](https://github.com/opencv/opencv)  
 [nlohmann/json](https://github.com/nlohmann/json)
 
 ## Note
