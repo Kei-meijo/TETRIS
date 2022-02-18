@@ -127,6 +127,7 @@ private:
 
 	bool gameOver1(bool flag = false);
 	bool gameOver2(bool flag = false);
+	bool rotSet(Blocks& block, int rot_dir, int srs_type);
 
 #ifdef _Debug
 	//Debug—p
