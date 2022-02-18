@@ -26,8 +26,8 @@ T-spin・Tetris判定あり
 
 ## Requirement
  
-*	[openCV 4.x](https://github.com/opencv/opencv)
-*	[nlohmann/json](https://github.com/nlohmann/json)
+[openCV 4.x](https://github.com/opencv/opencv)
+[nlohmann/json](https://github.com/nlohmann/json)
 
 ## Note
 
@@ -36,16 +36,18 @@ T-spin・Tetris判定あり
 画像の詳細  
 256x256px (これ以外でも動作しますが, このサイズを推奨します)  
 「0.png」～「8.png」  
-それぞれ  
-*	0.png:背景 (黒)  
-*	1.png:I-テトリミノ (水色)  
-*	2.png:O-テトリミノ (黄色)  
-*	3.png:S-テトリミノ (緑色)  
-*	4.png:Z-テトリミノ (赤色)  
-*	5.png:J-テトリミノ (青色)  
-*	6.png:L-テトリミノ (オレンジ色)  
-*	7.png:T-テトリミノ (紫色)  
-*	8.png:おじゃまブロック (灰色)  
+| ブロック名 | 画像名 |
+| ------------- | ------------- |
+| 背景 (黒)  | 0.png  |
+| I-テトリミノ (水色)  | 1.png  |
+| O-テトリミノ (黄色)  | 2.png  |
+| S-テトリミノ (緑色)  | 3.png  |
+| Z-テトリミノ (赤色)  | 4.png  |
+| J-テトリミノ (青色)  | 5.png  |
+| L-テトリミノ (オレンジ色)   | 6.png  |
+| T-テトリミノ (紫色)   | 7.png  |
+| おじゃまブロック (灰色)  | 8.png  |
+
 
 ## License
  
