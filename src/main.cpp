@@ -1,6 +1,9 @@
 #pragma once
-#include <opencv2/opencv.hpp>
-#define GAME_OVER_1
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <iostream>
+//#define GAME_OVER_1
 
 //board
 #include "board/board.h"
@@ -17,7 +20,19 @@
 #include "config/game_pad.h"
 #include "config/keyboard.h"
 
+#ifdef _DEBUG
 int main() {
+#else
+#include <Windows.h>
+
+int WINAPI WinMain(
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPSTR lpCmdLine,
+	int nCmdShow
+){ 
+//int main() {
+#endif // _DEBUG
 	//Level 設定 ファイル読み込み
 	Config config("param/tetris.json");
 
@@ -54,7 +69,6 @@ int main() {
 
 	int width = GetSystemMetrics(SM_CXSCREEN);
 	int height = GetSystemMetrics(SM_CYSCREEN);
-	printf("(%d, %d)\n", width, height);
 
 	//FPS設定
 	TimeBaseLoopExecuter exec(config.fps);
@@ -107,7 +121,6 @@ int main() {
 		action = keyboard.getAction(key);
 		if (action < 0)break;
 
-
 		bool can_start = true;
 		for (int i = 0; i < max(game_pad.Size(), 1); i++) {
 			//iはプレイヤー番号
@@ -121,7 +134,7 @@ int main() {
 
 			//外部からのactionを引継ぐことでプレイヤーが一人の場合はキーボードでも操作可能になる(はず)
 			if (action == Config::NONE) {
-				
+
 				if (start[i] < 0) {
 					//SATRTボタンを押してない時にゲームパッドをどう割り振るか決定する
 					//start 押してないうちで何番目か(ID若い順)
@@ -132,7 +145,7 @@ int main() {
 
 					//start 押してないIDからn番目のIDを取得
 					int select = 0;
-					for (; select < max(game_pad.Size(), 1) ; select++) {
+					for (; select < max(game_pad.Size(), 1); select++) {
 						//今探索中のIDがstart押したか調べる
 						bool contain = false;
 						for (int j = 0; j < i; j++) {
@@ -169,6 +182,13 @@ int main() {
 					//SATRTボタンを押しているので, 保存済みのIDを呼び出す
 					action = game_pad.getAction(start[i]);
 				}
+			} else if(action == Config::START){
+				//キーボード用スタート
+				start[i] = 1;
+			}
+
+			if (action == Config::BACK) {
+				break;
 			}
 
 
@@ -188,6 +208,8 @@ int main() {
 				bs[j]->setAtack(atk, game_pad.Size());//上で決めた攻撃をセット
 			}
 		}
+
+		if (action == Config::BACK)break;
 
 		//マルチプレイ時のみ
 		//他全員がゲームオーバーで終了
@@ -236,6 +258,8 @@ int main() {
 		//FPS調整
 		exec.TimeAdjustment();
 	}
+
+
 
 
 	for (auto& board : bs) {

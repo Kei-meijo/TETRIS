@@ -16,12 +16,11 @@ KeyBoard::KeyBoard(const char* file_name) : is_open(false) {
 	this->keys.push_back(Key("HOLD", Config::HOLD));
 	this->keys.push_back(Key("DOWN", Config::DOWN));
 	this->keys.push_back(Key("HARD DROP", Config::HARD_DROP));
+	this->keys.push_back(Key("START", Config::START));
 
 	if (ifs.good()) {
 		nl::json j;
 		ifs >> j;
-
-		std::cout << j["config name"].get<std::string>() << std::endl;
 
 		//key codeæ“¾
 		for (const auto& elem : j["key"].items()) {

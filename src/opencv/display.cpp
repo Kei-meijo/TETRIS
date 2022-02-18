@@ -1,6 +1,8 @@
 #include "display.h"
 
 #include "cv_util.h"
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 //‰æ–Ê(å‚É˜g)‚ğ•`‰æ
 //“Á‚Éà–¾‚µ‚È‚¢

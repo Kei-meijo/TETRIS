@@ -1,4 +1,7 @@
 #include "cv_util.h"
+
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <math.h>
 
 // ‰æ‘œ‚ğ‰æ‘œ‚É“\‚è•t‚¯‚éŠÖ”

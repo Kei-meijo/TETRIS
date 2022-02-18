@@ -4,9 +4,6 @@
 std::vector<Blocks::Point> Blocks::getPoints() {
 	//ブロックの一覧を生成
 	std::vector<Point> blocks;
-	//回転中心を設定(中心は現在座標そのままの値)
-	blocks.push_back(Point(this->x, this->y));
-
 	//rotateを正になるように調整
 	while (this->rotate < 0) {
 		this->rotate += 4;
@@ -15,6 +12,21 @@ std::vector<Blocks::Point> Blocks::getPoints() {
 	//何回回転させるか
 	//O型なら rot_maxが1なので必ず0
 	int rot = this->rotate % this->rot_max;
+
+	//回転により軸がずれるものの, 補正
+	int sx = 0;
+	int sy = 0;
+	for (const auto& rs : this->rot_sup) {
+		if (rs.status == rot) {
+			sx = rs.p.x;
+			sy = rs.p.y;
+			break;
+		}
+	}
+
+
+	//回転中心を設定(中心は現在座標そのままの値)
+	blocks.push_back(Point(this->x + sx, this->y + sy));
 
 	//回転させる(ブロックそれぞれで同じ処理を行う)
 	for (auto& point : this->blocks) {
@@ -30,7 +42,7 @@ std::vector<Blocks::Point> Blocks::getPoints() {
 		}
 
 		//今計算し終えたブロックを設定
-		blocks.push_back(Point(px + this->x, py + this->y));
+		blocks.push_back(Point(px + sx + this->x, py + sy + this->y));
 	}
 
 	return blocks;
@@ -51,7 +63,7 @@ std::vector<Blocks::Status> Blocks::getStats() {
 
 		//ここは上の物と一緒
 		int rot = this->rotate % this->rot_max;
-		for (auto& status : this->stas) {
+		for (const auto& status : this->stas) {
 			int px = status.p.x;
 			int py = status.p.y;
 			for (int r = 0; r < rot; r++) {
@@ -60,6 +72,14 @@ std::vector<Blocks::Status> Blocks::getStats() {
 
 				px = nx;
 				py = ny;
+			}
+
+			for (const auto& rs : this->rot_sup) {
+				if (rs.status == rot) {
+					px += rs.p.x;
+					py += rs.p.y;
+					break;
+				}
 			}
 
 			statuses.push_back(Status(px + this->x, py + this->y, status.status));
@@ -85,6 +105,12 @@ Blocks Blocks::clone() {
 	if (getStatSize() > 0) {
 		for (auto& st : this->stas) {
 			block.stas.push_back(st);
+		}
+	}
+
+	if (this->rot_sup.size() > 0) {
+		for (auto& rs : this->rot_sup) {
+			block.rot_sup.push_back(rs);
 		}
 	}
 

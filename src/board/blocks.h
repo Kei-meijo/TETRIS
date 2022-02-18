@@ -75,6 +75,12 @@ public:
 		return *this;
 	}
 
+	inline Blocks addRotSupport(int rot, int x, int y) {
+		this->rot_sup.push_back(Status(x, y, rot));
+
+		return *this;
+	}
+
 	//ブロックの座標を取得
 	std::vector<Point> getPoints();
 
@@ -105,4 +111,5 @@ private:
 	int type;
 	std::vector<Point> blocks;
 	std::vector<Status> stas;
+	std::vector<Status> rot_sup;
 };

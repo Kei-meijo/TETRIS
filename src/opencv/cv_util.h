@@ -1,6 +1,6 @@
 #pragma once
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
 
 // ‰æ‘œ‚ğ‰æ‘œ‚É“\‚è•t‚¯‚éŠÖ”
 void paste(cv::Mat& dst, cv::Mat src, int x, int y, int width, int height);

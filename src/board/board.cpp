@@ -1,8 +1,12 @@
 #include "board.h"
 
 #include "../opencv/cv_util.h"
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <math.h>
 #include <iostream>
+
+//#define NO_GRAVITY
 
 Board::Board() : img_size(40), already_hold(false), hold_block(0), next_size_max(6), is_game_over(false), can_action(false),
 	score(0), down_count(0), set_count(0), delete_line_wait(false), delete_line_wait_count(0),
@@ -62,16 +66,19 @@ Board::Board(int x, int y, Config& lvl) :
 
 	//ブロックの形状設定
 	this->minos[0] = this->minos[0].setType(0).setRot(1).add(0, 0).add(0, 0).add(0, 0);//NULL
-	this->minos[1] = this->minos[1].setType(1).setRot(2).add(0, 1).add(0, 2).add(0, -1);//I
+	this->minos[1] = this->minos[1].setType(1).setRot(4).add(-1, 0).add(1, 0).add(2, 0);//I
 	this->minos[2] = this->minos[2].setType(2).setRot(1).add(1, 0).add(0, 1).add(1, 1);//O
-	this->minos[3] = this->minos[3].setType(3).setRot(2).add(-1, 0).add(0, 1).add(1, 1);//S
-	this->minos[4] = this->minos[4].setType(4).setRot(2).add(1, 0).add(0, 1).add(-1, 1);//Z
-	this->minos[5] = this->minos[5].setType(5).setRot(4).add(0, 1).add(1, 0).add(2, 0);//J
-	this->minos[6] = this->minos[6].setType(6).setRot(4).add(0, 1).add(-1, 0).add(-2, 0);//L
+	this->minos[3] = this->minos[3].setType(3).setRot(4).add(-1, 0).add(0, 1).add(1, 1);//S
+	this->minos[4] = this->minos[4].setType(4).setRot(4).add(1, 0).add(0, 1).add(-1, 1);//Z
+	this->minos[5] = this->minos[5].setType(5).setRot(4).add(1, 0).add(-1, 0).add(-1, 1);//J
+	this->minos[6] = this->minos[6].setType(6).setRot(4).add(1, 0).add(-1, 0).add(1, 1);//L
 	this->minos[7] = this->minos[7].setType(7).setRot(4).add(0, 1).add(1, 0).add(-1, 0);//T
 
 	//Tスピン用当たり判定
 	this->minos[7] = this->minos[7].addStatus(-1, -1, 0).addStatus(1, -1, 0).addStatus(-1, 1, 1).addStatus(1, 1, 1);
+
+	//Iミノ特殊回転用
+	this->minos[1] = this->minos[1].addRotSupport(0, 0, 0).addRotSupport(1, 1, 0).addRotSupport(2, 1, -1).addRotSupport(3, 0, -1);
 
 	//Level 設定
 	//Level1とLevel2
@@ -92,6 +99,42 @@ Board::Board(int x, int y, Config& lvl) :
 	randomEngine = std::mt19937(randomSeed);
 	randomBlockDistribution = std::uniform_int_distribution<int>(1, this->mino_number - 1);
 	randomlineDistribution = std::uniform_int_distribution<int>(1, this->x);
+
+
+#ifdef _DEBUG
+
+	{
+		int i = 1;
+		int j = 1;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 0;
+		this->rawboard[i][j++] = 0;
+		this->rawboard[i][j++] = 0;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		i++; j = 1;
+
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 0;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		this->rawboard[i][j++] = 8;
+		i++; j = 1;
+
+		this->nexts.push_back(1);
+	}
+
+#endif // _DEBUG
+
 }
 
 
@@ -111,8 +154,6 @@ Board::~Board() {
 //初期化
 void Board::init() {
 	//メモリ確保
-	std::cout << "x = " << this->x << std::endl;
-	std::cout << "y = " << this->y << std::endl;
 	this->rawboard = new int* [this->y + 5];
 	for (int i = 0; i < this->y + 5; i++) {
 		this->rawboard[i] = new int[this->x + 2];
@@ -148,6 +189,12 @@ bool Board::isInterfere(Blocks& blocks) {
 	auto points = blocks.getPoints();
 	for (auto& p : points) {
 		//ミノの位置にブロックが被っていないか確認
+		if (p.x < 0 || p.x > this->x) {
+			true;
+		}
+		if (p.y < 0 || p.y >= this->y + 5) {
+			true;
+		}
 		if (this->rawboard[p.y][p.x] != 0) {
 			return true;
 		}
@@ -189,101 +236,407 @@ bool Board::move(int x, int y, int rot, bool action) {
 		}
 	} else if (rot != 0) {
 		//回転
+		//Iミノかどうかで回転の挙動が変わる
+		int old = tmp.rotate;
 		tmp.rotate += rot;
+		while (tmp.rotate < 0)tmp.rotate += 4;
+		tmp.rotate %= 4;
 
-		int tx = tmp.x;
-		int ty = tmp.y;
-
-		//ミノの座標取得
-		auto points = tmp.getPoints();
-
-		//Super Rotation 回転軸を動かしながら,設置できる位置に設置
-		//符号のループ -1 or 1 y用
-		for (int code_y = -1; code_y <= 1; code_y += 2) {
-
-			//y座標 0, 1, 2, -1
-			for (int ddy = 0; ddy <= 2; ddy++) {
-				//2回目の0はスキップ(すでに計算済み)
-				if (code_y == 1 && ddy == 0)continue;
-				int dy = code_y * ddy;
-
-				//符号のループ 1 or -1 x用
-				for (int code_x = 1; code_x >= -1; code_x -= 2) {
-					//中心位置 0～1(x方向)
-					for (int ddx = 0; ddx <= 2; ddx++) {
-						int dx = ddx * code_x;
-
-						//xとyの距離が両方2以上は移動しない
-						if (ddy > 1 && ddx > 1)continue;
-
-						//std::cout << "(dx, dy) = (" << dx << "," << dy << ")" << std::endl;
+		//回転を0～3に収める
+		int rot_dir = rot;
+		while (rot_dir < 0) { rot_dir += 4; }
+		while (rot_dir >= 4) { rot_dir -= 4; }
 
 
-						int nx = tx + dx;
-						int ny = ty + dy;
+		printf("old = %d  now = %d  ", rot_dir, tmp.rotate);
+		switch (old) {
+		case 0: printf("A"); break;
+		case 1: printf("B"); break;
+		case 2: printf("C"); break;
+		case 3: printf("D"); break;
+		}
+		printf("→");
 
-						//回転中心が画面範囲外
-						if (ny < 1 || nx < 1 || nx > this->x)break;
+		switch (tmp.rotate) {
+		case 0: printf("A"); break;
+		case 1: printf("B"); break;
+		case 2: printf("C"); break;
+		case 3: printf("D"); break;
+		}
+		printf("\n");
 
-						//回転中心以外も確認
-						bool can_place = true;
-						for (auto& p : points) {
-							nx = p.x + dx;
-							ny = p.y + dy;
+		if (tmp.getType() != 1) {
+			if (!isInterfere(tmp)) {
+				//普通に回転可能
+				//移動できるので,実際に移動
+				now_block = tmp;
 
-							//画面範囲内かどうか
-							if (ny < 1 || nx < 1 || nx > this->x) {
-								can_place = false;
-								break;
-							}
+				//最後に操作した行動を保存
+				if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
+				if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
+				this->srs_type = 0;
 
-							//ブロックがないか
-							if (this->rawboard[ny][nx] != 0) {
-								can_place = false;
-								break;
-							}
+				//ゴーストも動かす
+				ghost_set();
+
+				return true;
+			} else {
+				//干渉するのでSRS 1で回転
+				// 1. 軸を左右に動かす
+				// 0が90度（B）の場合は左，-90度（D）の場合は右へ移動
+				// 0が0度（A），180度（C）の場合は回転した方向の逆へ移動
+				int dx = 0;
+				int dy = 0;
+				switch (tmp.rotate) {
+				case 1: dx = -1; break;
+				case 3: dx = +1; break;
+				case 0:
+				case 2:
+					switch (old) {
+					case 1:dx = +1; break;
+					case 3:dx = -1; break;
+					}
+					break;
+				}
+
+				tmp.x += dx;
+				if (!isInterfere(tmp)) {
+					//SRS type1で回転可能
+					//移動できるので,実際に移動
+					now_block = tmp;
+
+					//最後に操作した行動を保存
+					if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
+					if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
+					this->srs_type = 1;
+					//ゴーストも動かす
+					ghost_set();
+					return true;
+				} else {
+					//まだ干渉するのでSRS 2で回転
+					// 2.その状態から軸を上下に動かす
+					// 0が90度（B），-90度（D）の場合は上へ移動
+					// 0が0度（A），180度（C）の場合は下へ移動
+					dx = 0;
+					switch (tmp.rotate) {
+					case 1:
+					case 3:
+						dy = +1; break;
+					case 0:
+					case 2:
+						dy = -1; break;
+					}
+
+					tmp.y += dy;
+					if (!isInterfere(tmp)) {
+						//SRS type 2で回転可能
+						//移動できるので,実際に移動
+						now_block = tmp;
+
+						//最後に操作した行動を保存
+						if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
+						if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
+						this->srs_type = 2;
+						
+						//ゴーストも動かす
+						ghost_set();
+						return true;
+					} else {
+						//まだ干渉するのでSRS 3で回転
+						// 3.元に戻し、軸を上下に2マス動かす
+						// 0が90度（B），-90度（D）の場合は下へ移動
+						// 0が0度（A），180度（C）の場合は上へ移動
+						int tr = tmp.rotate;
+						tmp = now_block.clone();
+						dx = 0;
+						dy = 0;
+						tmp.rotate = tr;
+
+						switch (tmp.rotate) {
+						case 1:
+						case 3:
+							dy = -2; break;
+						case 0:
+						case 2:
+							dy = +2; break;
 						}
+						tmp.y += dy;
+						if (!isInterfere(tmp)) {
+							//SRS type 3で回転可能
+							//移動できるので,実際に移動
+							now_block = tmp;
 
-						//探索し終えてブロックが設置できるので設置
-						if (can_place) {
-							if (action) {
-								tmp.x = tx + dx;
-								tmp.y = ty + dy;
+							//最後に操作した行動を保存
+							if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
+							if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
+							this->srs_type = 3;
 
+							//ゴーストも動かす
+							ghost_set();
+							return true;
+						} else {
+							//まだ干渉するのでSRS 4で回転
+							// 4.その状態から軸を左右に動かす
+							// 0が90度（B）の場合は左，-90度（D）の場合は右へ移動
+							// 0が0度（A），180度（C）の場合は回転した方向の逆へ移動
+							dx = 0;
+							switch (tmp.rotate) {
+							case 1:dx = -1; break;
+							case 3:dx = +1; break;
+							case 0:
+							case 2:
+								switch (old) {
+								case 1:dx = -1; break;
+								case 3:dx = +1; break;
+								}
+								break;
+							}
+
+							tmp.x += dx;
+							if (!isInterfere(tmp)) {
+								//SRS type 4で回転可能
 								//移動できるので,実際に移動
 								now_block = tmp;
-
-								//回転を0～3に収める
-								int rot_dir = rot;
-								while (rot_dir < 0) { rot_dir += 4; }
-								while (rot_dir >= 4) { rot_dir -= 4; }
 
 								//最後に操作した行動を保存
 								if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
 								if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
-
-								//mini Tspin判定用のSRS移動タイプ判別
-								if (ddx == 1 && ddy == 0) {
-									this->srs_type = 1;
-								} else if (ddx == 1 && ddy == 1) {
-									this->srs_type = 2;
-								} else if (ddx == 0 && ddy == 2) {
-									this->srs_type = 3;
-								} else if (ddx == 1 && ddy == 2) {
-									this->srs_type = 4;
-								} else {
-									this->srs_type = 0;
-								}
+								this->srs_type = 4;
 
 								//ゴーストも動かす
 								ghost_set();
+								return true;
 							}
-							return true;
+
+							return false;
 						}
 					}
 				}
 			}
+
+		} else {
+		
+			
+			//まずは普通に回転
+			int dx = 0;
+			int dy = 0;	
+
+			printf("\t基準(%d, %d)\n", now_block.x, now_block.y);
+
+			if (!isInterfere(tmp)) {
+				//普通に置けるので置く
+				//移動できるので,実際に移動
+				now_block = tmp;
+				printf("\nSRS type = 0\n");
+
+				//最後に操作した行動を保存
+				if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
+				if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
+				this->srs_type = 0;
+
+				//ゴーストも動かす
+				ghost_set();
+				return true;
+			}
+
+			//まだ回せない SRS 1
+			// 1. 軸を左右に動かす
+			// 0が90度（B）の場合は右，-90度（D）の場合は左へ移動（枠にくっつく）
+			// 0が0度（A），180度（C）の場合は回転した方向の逆へ移動 0度は２マス移動
+			dx = 0;
+			dy = 0;
+			switch (tmp.rotate) {
+			case 1:dx = +1; break;
+			case 3:dx = -1; break;
+			case 0:
+			case 2:
+				switch (rot_dir) {
+				case 1:dx = -1; break;
+				case 3:dx = +1; break;
+				}
+
+				//0°は2マス移動
+				if (tmp.rotate == 0) {
+					dx *= 2;
+				}
+				break;
+			}
+
+			tmp.x += dx;
+			printf("\tさらに移動(%d, %d)\n", dx, dy);
+			printf("\t現在位置(%d, %d)\n", tmp.x, tmp.y);
+			if (!isInterfere(tmp)) {
+				//普通に置けるので置く
+				//移動できるので,実際に移動
+				printf("\nSRS type = 1\n");
+				now_block = tmp;
+
+				//最後に操作した行動を保存
+				if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
+				if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
+				this->srs_type = 1;
+
+				//ゴーストも動かす
+				ghost_set();
+				return true;
+			}
+
+			// 2. 軸を左右に動かす
+			// 0が90度（B）の場合は左，-90度（D）の場合は右へ移動（枠にくっつく）
+			// 0が0度（A），180度（C）の場合は回転した方向へ移動 180度は２マス移動
+			int tr = tmp.rotate;
+			Blocks tmp2 = now_block.clone();
+			tmp2.rotate = tr;
+
+			dx = 0;
+			dy = 0;
+			switch (tmp2.rotate) {
+			case 1:dx = -1; break;
+			case 3:dx = +1; break;
+			case 0:
+			case 2:
+				switch (rot_dir) {
+				case 1:dx = +1; break;
+				case 3:dx = -1; break;
+				}
+
+				//180度は2マス移動
+				if (tmp2.rotate == 2) {
+					dx *= 2;
+				}
+				break;
+			}
+			tmp2.x += dx;
+			if (!isInterfere(tmp2)) {
+				//普通に置けるので置く
+				//移動できるので,実際に移動
+				now_block = tmp2;
+
+				//最後に操作した行動を保存
+				if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
+				if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
+				this->srs_type = 2;
+
+				//ゴーストも動かす
+				ghost_set();
+				return true;
+			}
+
+			// 3. 軸を上下に動かす
+			// 0が90度（B）の場合は1を下，-90度（D）の場合は1を上へ移動
+			// 0が0度（A），180度（C）の場合は
+			// 回転前のミノが右半分にある（B）なら1を上へ
+			// 回転前のミノが左半分にある（D）なら2を下へ移動
+			// 左回転なら２マス動かす
+			int mx = 0;
+			switch (tmp.rotate) {
+			case 1:
+				mx = tmp.x;
+				dy = +1;
+				break;
+			case 3:
+				mx = tmp.x;
+				dy = -1;
+				break;
+			case 0:
+			case 2:
+				switch (old) {
+				case 1:
+					mx = tmp.x;
+					dy = +1;
+					break;
+				case 3:
+					mx = tmp2.x;
+					dy = -1;
+					break;
+				}
+				break;
+			}
+
+			//左回転
+			if (rot_dir == 3) {
+				dy *= 2;
+			}
+
+			Blocks tmp3 = now_block.clone();
+			tmp3.rotate = tr;
+			tmp3.x = mx;
+			tmp3.y += dy;
+			if (!isInterfere(tmp3)) {
+				//普通に置けるので置く
+				//移動できるので,実際に移動
+				now_block = tmp3;
+
+				//最後に操作した行動を保存
+				if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
+				if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
+				this->srs_type = 3;
+
+				//ゴーストも動かす
+				ghost_set();
+				return true;
+			}
+
+			// 4. 軸を上下に動かす
+			// 0が90度（B）の場合は2を上，-90度（D）の場合は2を下へ移動
+			// 0が0度（A），180度（C）の場合は
+			// 回転前のミノが右半分にある（B）なら2を下へ
+			// 回転前のミノが左半分にある（D）なら1を上へ移動
+			// 右回転なら２マス動かす
+			dx = 0;
+			dy = 0;
+			mx = 0;
+			switch (tmp.rotate) {
+			case 1:
+				mx = tmp2.x;
+				dy = -1;
+				break;
+			case 3:
+				mx = tmp2.x;
+				dy = +1;
+				break;
+			case 0:
+			case 2:
+				switch (old) {
+				case 1:
+					mx = tmp2.x;
+					dy = +1;
+					break;
+				case 3:
+					mx = tmp.x;
+					dy = -1;
+					break;
+				}
+				break;
+			}
+			//右回転
+			if (rot_dir == 3) {
+				dy *= 2;
+			}
+
+			Blocks tmp4 = now_block.clone();
+			tmp4.rotate = tr;
+			tmp4.x = mx;
+			tmp4.y += dy;
+			if (!isInterfere(tmp4)) {
+				//普通に置けるので置く
+				//移動できるので,実際に移動
+				now_block = tmp4;
+
+				//最後に操作した行動を保存
+				if (rot_dir == 1) { last_action = Config::ROTATION_CW; }
+				if (rot_dir == 3) { last_action = Config::ROTATION_CCW; }
+				this->srs_type = 4;
+
+				//ゴーストも動かす
+				ghost_set();
+				return true;
+			}
+
+			return false;
 		}
+
+		
 
 	} else if (y != 0) {
 		//下方向
@@ -1187,7 +1540,10 @@ bool  Board::loop(int action) {
 			}
 		}
 
+#ifndef NO_GRAVITY
 		this->down_count++;
+#endif // NO_GRAVITY
+		
 	} else {
 		//操作不可
 		if (put_block_state) {
@@ -1225,12 +1581,10 @@ bool  Board::loop(int action) {
 		last_action_count = 0;
 	}
 
-	printf("last action =  %d\n", this->set_count);
-
 	//無操作が一定時間続くか, HARDDROPしたとき
 	if (this->set_count == this->now_level.set_count_max && !(action & Config::LONG_PRESS) || force_set || !candown) {
 		if (candown)candown = move(0, -1, 0, false);//した移動できるか確認(実際に動かさない)
-		if (!candown)printf("down %d\n", this->set_count);
+
 		if (!candown) {
 			//下移動不可
 			this->set_count = 0;
@@ -1315,8 +1669,6 @@ void Board::loadimg() {
 			static_cast<double>(img_size) / static_cast<double>(tmp.rows));
 		images[i] = tmp.clone();
 	}
-
-	std::cout << "load images" << std::endl;
 }
 
 //ゴーストの設定
@@ -1385,7 +1737,7 @@ cv::Mat Board::getMinoImage(int type, int type_c) {
 
 	//中心位置を計算して, ずらす量を出す
 	//1引いているのは本家と合わせるため(ほんとは行かないほうがバグ生まないかも)
-	int dx = MINO_SIZE_MAX / 2 - width / 2 - 1;
+	int dx = MINO_SIZE_MAX / 2 - width / 2;
 	int dy = MINO_SIZE_MAX / 2 - height / 2;
 
 	//showと違って, ブロックの位置だけ描画する

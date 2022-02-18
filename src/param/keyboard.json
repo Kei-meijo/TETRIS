@@ -28,6 +28,10 @@
     {
       "key name": "HARD DROP",
       "key code": [ 90, 122 ]
+    },
+    {
+      "key name": "START",
+      "key code": [ 13 ]
     }
   ]
 }

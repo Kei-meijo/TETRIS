@@ -10,7 +10,7 @@
       "level up score": 0,
       "speed": {
         "last action count": 2,
-        "set count": 15,
+        "set count": 30,
         "delete line wait": 5,
         "down speed": 40,
         "attack count yellow": 150,
@@ -54,7 +54,7 @@
       "level up score": 1500,
       "speed": {
         "last action count": 2,
-        "set count": 15,
+        "set count": 30,
         "delete line wait": 5,
         "down speed": 30,
         "attack count yellow": 150,
@@ -98,7 +98,7 @@
       "level up score": 4000,
       "speed": {
         "last action count": 2,
-        "set count": 13,
+        "set count": 30,
         "delete line wait": 5,
         "down speed": 25,
         "attack count yellow": 150,
@@ -142,7 +142,7 @@
       "level up score": 10000,
       "speed": {
         "last action count": 2,
-        "set count": 13,
+        "set count": 30,
         "delete line wait": 5,
         "down speed": 20,
         "attack count yellow": 150,

@@ -20,17 +20,17 @@
     {
       "type": "button",
       "key name": "POV UP",
-      "action name": ""
-    },
-    {
-      "type": "button",
-      "key name": "BUTTON A",
       "action name": "HARD DROP"
     },
     {
       "type": "button",
+      "key name": "BUTTON A",
+      "action name": "ROTATION CCW"
+    },
+    {
+      "type": "button",
       "key name": "BUTTON B",
-      "action name": ""
+      "action name": "ROTATION CW"
     },
     {
       "type": "button",
@@ -40,12 +40,12 @@
     {
       "type": "button",
       "key name": "BUTTON LB",
-      "action name": "ROTATION CCW"
+      "action name": "HOLD"
     },
     {
       "type": "button",
       "key name": "BUTTON RB",
-      "action name": "ROTATION CW"
+      "action name": "HOLD"
     },
     {
       "type": "button",
