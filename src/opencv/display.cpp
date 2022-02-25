@@ -49,7 +49,6 @@ void createDisplay(Board& board, cv::Mat& display) {
 
 	int fontface = cv::FONT_HERSHEY_COMPLEX | cv::FONT_ITALIC;
 	int thickness = 2;
-	int baseline = 0;
 	double scale = 0.7;
 	putTextCenter(display, "HOLD", h + nh + hold.cols / 2, dh / 2, fontface, scale, cv::Scalar(0, 0, 0), thickness, cv::LINE_AA);
 
