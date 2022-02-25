@@ -66,7 +66,7 @@ openCV
 画像貼り付け https://kougaku-navi.hatenablog.com/entry/20160108/p1  
 ウィンドウ位置変更 https://qiita.com/Kazuhito/items/b2ebd9f9010f1ffcac5b  
 
-ゲームパッド入力
+ゲームパッド入力  
 XInput1 http://gameprogrammingunit.web.fc2.com/xinput/index.html  
 XInput2 http://pc98.skr.jp/post/2019/0819/  
 
