@@ -47,7 +47,11 @@ void createDisplay(Board& board, cv::Mat& display) {
 			cv::Point(th + h, dh + hold.rows + 2 * hh), cv::Point(h, dh + hold.rows + 2 * hh - th)}
 	, color);
 
-	cv::putText(display, "HOLD", cv::Point(h + th + 30, dh - 20), cv::FONT_HERSHEY_COMPLEX | cv::FONT_ITALIC, 0.7, cv::Scalar(0, 0, 0), 2, cv::LINE_AA);
+	int fontface = cv::FONT_HERSHEY_COMPLEX | cv::FONT_ITALIC;
+	int thickness = 2;
+	int baseline = 0;
+	double scale = 0.7;
+	putTextCenter(display, "HOLD", h + nh + hold.cols / 2, dh / 2, fontface, scale, cv::Scalar(0, 0, 0), thickness, cv::LINE_AA);
 
 	//board
 	cv::rectangle(display, cv::Rect(h + hold.cols + 2 * nh, 0, h, height), color, -1);
@@ -74,7 +78,8 @@ void createDisplay(Board& board, cv::Mat& display) {
 	cv::fillConvexPoly(display, std::vector<cv::Point>{
 		cv::Point(n_x + n_w - th, dh + n_h), cv::Point(n_x + n_w, dh + n_h - th), cv::Point(n_x + n_w, dh + n_h)
 	}, color);
-	cv::putText(display, "NEXT", cv::Point(n_x + 15, dh - 20), cv::FONT_HERSHEY_COMPLEX | cv::FONT_ITALIC, 0.7, cv::Scalar(0, 0, 0), 2, cv::LINE_AA);
+	putTextCenter(display, "NEXT", n_x + n_w / 2, dh / 2, fontface, scale, cv::Scalar(0, 0, 0), thickness, cv::LINE_AA);
+
 
 	//attack
 	int a_y = dh + 2 * hh + h + hold.rows;
@@ -104,8 +109,15 @@ void createDisplay(Board& board, cv::Mat& display) {
 
 	//text
 	//cv::putText(score, "Score", cv::Point(10, 200), cv::FONT_HERSHEY_COMPLEX, 0.65, cv::Scalar(250, 250, 250), 1, cv::LINE_AA);
-	cv::putText(score, score_.name1, cv::Point(15, 165), cv::FONT_HERSHEY_COMPLEX, 0.60, cv::Scalar(250, 250, 250), 1, cv::LINE_AA);
-	cv::putText(score, score_.name2, cv::Point(15, 195), cv::FONT_HERSHEY_COMPLEX, 0.60, cv::Scalar(250, 250, 250), 1, cv::LINE_AA);
+	cv::putText(score, score_.name1, cv::Point(15, 145), cv::FONT_HERSHEY_COMPLEX, 0.60, cv::Scalar(250, 250, 250), 1, cv::LINE_AA);
+	cv::putText(score, score_.name2, cv::Point(15, 165), cv::FONT_HERSHEY_COMPLEX, 0.60, cv::Scalar(250, 250, 250), 1, cv::LINE_AA);
+
+	if (score_.back_to_back > 0) {
+		cv::putText(score, "back", cv::Point(15, 185), cv::FONT_HERSHEY_COMPLEX, 0.60, cv::Scalar(250, 250, 250), 1, cv::LINE_AA);
+		cv::putText(score, "to", cv::Point(30, 205), cv::FONT_HERSHEY_COMPLEX, 0.60, cv::Scalar(250, 250, 250), 1, cv::LINE_AA);
+		cv::putText(score, "back", cv::Point(45, 225), cv::FONT_HERSHEY_COMPLEX, 0.60, cv::Scalar(250, 250, 250), 1, cv::LINE_AA);
+
+	}
 
 	//level
 	cv::putText(score, "Level " + std::to_string(score_.level), cv::Point(10, 260), cv::FONT_HERSHEY_COMPLEX, 0.65, cv::Scalar(250, 250, 250), 1, cv::LINE_AA);

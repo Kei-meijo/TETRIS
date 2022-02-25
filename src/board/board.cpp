@@ -6,13 +6,16 @@
 #include <math.h>
 #include <iostream>
 
-//#define NO_GRAVITY
+#ifdef _DEBUG
+#define NO_GRAVITY
+#endif // _DEBUG
 
 Board::Board() : img_size(40), already_hold(false), hold_block(0), next_size_max(6), is_game_over(false), can_action(false),
 	score(0), down_count(0), set_count(0), delete_line_wait(false), delete_line_wait_count(0),
 	last_action(Config::NONE), last_action_key(Config::NONE), last_action_count(0), ren(0), back_to_back(0),
 	go_dir(0), go_x(1), go_y(0), go_c(0), need_calc_score(false), is_started(false), attack(0),
-	attack_yellow_type(2), attack_red_type(4), can_put_block(true), put_block_state(false), fps(30), x(10), y(20) {
+	attack_yellow_type(2), attack_red_type(4), can_put_block(true), put_block_state(false), fps(30), x(10), y(20),
+	highest_line(0) {
 
 	this->x = 10;
 	this->y = 20;
@@ -99,41 +102,6 @@ Board::Board(int x, int y, Config& lvl) :
 	randomEngine = std::mt19937(randomSeed);
 	randomBlockDistribution = std::uniform_int_distribution<int>(1, this->mino_number - 1);
 	randomlineDistribution = std::uniform_int_distribution<int>(1, this->x);
-
-
-//#ifdef _DEBUG
-//
-//	{
-//		int i = 1;
-//		int j = 1;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 0;
-//		this->rawboard[i][j++] = 0;
-//		this->rawboard[i][j++] = 0;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		i++; j = 1;
-//
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 0;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		this->rawboard[i][j++] = 8;
-//		i++; j = 1;
-//
-//		this->nexts.push_back(1);
-//	}
-//
-//#endif // _DEBUG
 
 }
 
@@ -1510,6 +1478,7 @@ Board::Score Board::getScore() {
 	s.level = now_level.level;
 	s.ren = ren - 1 < 0 ? 0 : ren - 1 < 0;
 	s.score = score;
+	s.back_to_back = back_to_back;
 
 	//íœ‚Ì‚³‚ê•û
 	//tetris‚Æ‚©t spin‚Æ‚©‚µ‚½‚Æ‚«‚É‰æ–Ê‚É•¶Žš‚ª•\Ž¦‚³‚ê‚é‚æ‚¤‚É‚·‚é

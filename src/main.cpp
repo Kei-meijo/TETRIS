@@ -73,6 +73,7 @@ int WINAPI WinMain(
 	//FPS設定
 	TimeBaseLoopExecuter exec(config.fps);
 	bool game_state = false;
+	bool isGameOver = false;
 	for (int count = 0;; count++) {
 		//GAME処理
 		int action = Config::NONE;
@@ -92,7 +93,7 @@ int WINAPI WinMain(
 
 			//順位の描画
 			if (rank[i] > 0) {
-				cv::putText(tmp, "RANK  " + std::to_string(rank[i]), cv::Point(tmp.cols / 2 - 100, tmp.rows / 2), cv::FONT_HERSHEY_COMPLEX | cv::FONT_ITALIC, 1.5, cv::Scalar(197, 43, 57), 2, cv::LINE_AA);
+				putTextCenter(tmp, "RANK  " + std::to_string(rank[i]), tmp.cols / 2, tmp.rows / 2, cv::FONT_HERSHEY_COMPLEX | cv::FONT_ITALIC, 1.5, cv::Scalar(197, 43, 57), 2, cv::LINE_AA);
 			}
 
 			//画面結合
@@ -131,10 +132,8 @@ int WINAPI WinMain(
 			//自由に決めるためにSTART押した順に, 1P 2P としたい
 			//ので, プレイヤー番号とゲームパッドのIDを柔軟に紐づけする必要がある
 
-
 			//外部からのactionを引継ぐことでプレイヤーが一人の場合はキーボードでも操作可能になる(はず)
 			if (action == Config::NONE) {
-
 				if (start[i] < 0) {
 					//SATRTボタンを押してない時にゲームパッドをどう割り振るか決定する
 					//start 押してないうちで何番目か(ID若い順)
@@ -181,6 +180,17 @@ int WINAPI WinMain(
 				} else {
 					//SATRTボタンを押しているので, 保存済みのIDを呼び出す
 					action = game_pad.getAction(start[i]);
+					//Restart
+					if (action == Config::START && isGameOver) {
+						for (int k = 0; k < max(game_pad.Size(), 1); k++) {
+							delete bs[i];
+							bs[i] = new Board(config.width, config.height, config);
+							rank[k] = -1;
+						}
+						can_start = true;
+						game_state = false;
+						isGameOver = false;
+					}
 				}
 			} else if(action == Config::START){
 				//キーボード用スタート
@@ -243,6 +253,14 @@ int WINAPI WinMain(
 			if (player_count == 1) {
 				if (rank[last_player] < 0)bs[last_player]->end();//ゲーム終了
 				rank[last_player] = 1;//生きているプレイヤーを1位へ
+
+				isGameOver = true;
+			}
+		} else {
+			//シングルプレイヤー
+			if (bs[0]->isGameOver()) {
+				isGameOver = true;
+				rank[0] = 1;
 			}
 		}
 

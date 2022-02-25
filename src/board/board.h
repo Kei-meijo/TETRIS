@@ -97,11 +97,12 @@ public:
 	//Score‚ð“ü‚ê‚é‚½‚ß‚Ì“ü‚ê•¨
 	struct Score {
 
-		Score() : score(0), ren(0), level(0), name1(""), name2("") {}
+		Score() : score(0), ren(0), level(0), name1(""), name2(""), back_to_back(0){}
 
 		int score;
 		int ren;
 		int level;
+		int back_to_back;
 		std::string name1;
 		std::string name2;
 	};

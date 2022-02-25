@@ -1,7 +1,7 @@
 ![openCV ver](https://img.shields.io/badge/openCV-%3E%3D4.0-blue)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0fe72812e4fe459cb0bb404f857cc47f)](https://www.codacy.com/gh/Kei-meijo/TETRIS/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Kei-meijo/TETRIS&amp;utm_campaign=Badge_Grade)
 ![Code Size](https://img.shields.io/github/languages/code-size/Kei-meijo/TETRIS)
-![version](https://img.shields.io/badge/version-1.2.1-blue)
+![version](https://img.shields.io/badge/version-1.2.3-blue)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Kei-meijo/TETRIS/blob/master/LICENSE.MIT)
 
 # TETRIS

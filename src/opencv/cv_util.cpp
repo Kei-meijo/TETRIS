@@ -53,3 +53,9 @@ void concat(cv::Mat& dst, cv::Mat left, cv::Mat right, int margin) {
 void blend_paste(cv::Mat dst, cv::Mat src, int x, int y) {
 	blend_paste(dst, src, x, y, src.cols, src.rows);
 }
+
+void putTextCenter(cv::Mat& src, const std::string& str, int x, int y, int fontface, double scale, cv::Scalar color, int thickness, int linetype) {
+	int baseline = 0;
+	cv::Size size = cv::getTextSize(str, fontface, scale, thickness, &baseline);
+	cv::putText(src, str, cv::Point(x - size.width / 2, y + size.height / 2), fontface, scale, color, thickness, linetype);
+}
