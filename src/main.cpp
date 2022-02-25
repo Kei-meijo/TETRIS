@@ -183,8 +183,8 @@ int WINAPI WinMain(
 					//Restart
 					if (action == Config::START && isGameOver) {
 						for (int k = 0; k < max(game_pad.Size(), 1); k++) {
-							delete bs[i];
-							bs[i] = new Board(config.width, config.height, config);
+							delete bs[k];
+							bs[k] = new Board(config.width, config.height, config);
 							rank[k] = -1;
 						}
 						can_start = true;
@@ -210,13 +210,6 @@ int WINAPI WinMain(
 			//次のプレイヤーに影響しないよう
 			//キーボード(ループ外)→1P : OK
 			//1P→2P : NG
-
-			//攻撃等
-			int atk = bs[i]->popAttack();//攻撃取得
-			for (int j = 0; j < game_pad.Size(); j++) {
-				if (i == j)continue;//自分自身には攻撃しない
-				bs[j]->setAtack(atk, game_pad.Size());//上で決めた攻撃をセット
-			}
 		}
 
 		if (action == Config::BACK)break;
@@ -246,6 +239,15 @@ int WINAPI WinMain(
 					//生きているプレイヤーの番号も保存
 					player_count++;
 					last_player = i;
+				}
+			}
+
+			for (int i = 0; i < game_pad.Size(); i++) {
+				//攻撃等
+				int atk = bs[i]->popAttack();//攻撃取得
+				for (int j = 0; j < game_pad.Size(); j++) {
+					if (i == j)continue;//自分自身には攻撃しない
+					bs[j]->setAtack(atk, player_count);//上で決めた攻撃をセット
 				}
 			}
 

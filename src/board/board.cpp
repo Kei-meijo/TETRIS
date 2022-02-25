@@ -10,6 +10,8 @@
 #define NO_GRAVITY
 #endif // _DEBUG
 
+//#define RAND_SET
+
 Board::Board() : img_size(40), already_hold(false), hold_block(0), next_size_max(6), is_game_over(false), can_action(false),
 	score(0), down_count(0), set_count(0), delete_line_wait(false), delete_line_wait_count(0),
 	last_action(Config::NONE), last_action_key(Config::NONE), last_action_count(0), ren(0), back_to_back(0),
@@ -642,18 +644,25 @@ bool Board::setNewBlock() {
 			//fillが1の場合		この場合,ブロックが連続しなくなる
 			//番号				1　2　3　4　5　6　7
 			//後何回出せるか	1　1　1　1　1　1　1
-			//ずっと上のような状況は面白くないので,たまには連続するように2で埋める時も作る
-			//fillが1の場合		この場合,ブロックが連続する可能性あり
-			//番号				1　2　3　4　5　6　7
-			//後何回出せるか	2　2　2　2　2　2　2
-			//ただ,ずっと2だと連続しすぎるので,1と2をランダムにする
-			//↓は1多めのランダム
-			int fill = randomBlockDistribution(randomEngine) > 5 ? 2 : 1;
+			int fill =
+#ifdef RAND_SET
+				//ずっと上のような状況は面白くないので,たまには連続するように2で埋める時も作る
+				//fillが2の場合		この場合,ブロックが連続する可能性あり
+				//番号				1　2　3　4　5　6　7
+				//後何回出せるか	2　2　2　2　2　2　2
+				//ただ,ずっと2だと連続しすぎるので,1と2をランダムにする
+				//↓は1多めのランダム
+				randomBlockDistribution(randomEngine) > 5 ? 2 : 1;
+
 			//ゲーム開始時は運要素を減らすため, 必ず1にする
 			//ゲーム開始時はNEXTが0なので, それを利用して判別している
 			if (this->nexts.size() < 1) {
 				fill = 1;
 			}
+#else
+				//常にfillを1にする
+				1;
+#endif // RAND_SET
 			
 			//fillを埋める
 			for (int i = 1; i < this->mino_number; i++) {
